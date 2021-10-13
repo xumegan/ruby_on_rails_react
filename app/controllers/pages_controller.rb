@@ -1,4 +1,4 @@
-class PagesController M
+
 
   class PagesController < ApplicationController
     def index

@@ -1,32 +1,40 @@
 module Api
   module V1
-    class AirlinesController < ApiController
+    class AirlinesController < ApplicationController
+      protect_from_forgery with: :null_session
        # GET /api/v1/airlines
       def index
         airlines=Airline.all
-        render json: AirLingSerializer.new(airlines,options).serialized_json
+        render json: AirlineSerializer.new(airlines,options).serialized_json
       end
        # GET /api/v1/airlines/:slug
       def show
-        airline=Airline.find_by(slug.params[:slug])
-        render json: AirLingSerializer.new(airlines,options).serialized_json
+        airline=Airline.find_by(slug: params[:slug])
+        render json: AirlineSerializer.new(airline,options).serialized_json
       end
       def create
         airline=Airline.new(airline_params)
         if airline.save
-          render json: AirLingSerializer.new(airlines).serialized_json
+          render json: AirlineSerializer.new(airline).serialized_json
+        else 
+          render json: {error: airline.errors.messages},status:422
+        end
       end
       def update
-        airline=Airline.find_by(slug.params[:slug])
+        airline=Airline.find_by(slug:params[:slug])
         if airline.update(airline_params)
-          render json: AirLingSerializer.new(airlines,options).serialized_json
-        else render json: {error: airline.errors.messages},status:422
+          render json: AirlineSerializer.new(airline,options).serialized_json
+        else 
+          render json: {error: airline.errors.messages},status:422
+        end
       end
       def destroy
-        airline=Airline.find_by(slug.params[:slug])
+        airline=Airline.find_by(slug:params[:slug])
         if airline.destroy
           head:no_content
-        else render json: {error: airline.errors.messages},status:422
+        else 
+          render json: {error: airline.errors.messages},status:422
+        end
       end
       private
       def airline_params
@@ -34,6 +42,7 @@ module Api
       end
       def options
         @options ||={include:%i[reviews]}
-    end
+      end
+    end  
   end
 end  
